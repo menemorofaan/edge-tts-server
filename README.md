@@ -35,3 +35,59 @@ No need to run `pip install` manually — the script installs required dependenc
 3. The server will start locally at:
    ```text
    http://127.0.0.1:5050
+   ```
+
+---
+
+## 📂 Included Scripts
+
+| File | Description |
+| :--- | :--- |
+| `tts_server.cmd` | Standard Edge TTS server. Generates audio directly for the received text. |
+| `tts_server_translator.cmd` | Checks if text contains Cyrillic characters; if not, translates it to Russian before speaking. |
+
+---
+
+## 🔌 API Reference
+
+### Health Check
+- **GET** `http://127.0.0.1:5050/` or `/v1`
+- Response: `{"status": "ok"}`
+
+### List Voices
+- **GET** `http://127.0.0.1:5050/v1/audio/voices`
+- Response: `[{"voice_id": "ru-RU-DmitryNeural", "name": "Dmitry"}]`
+
+### Speech Synthesis
+- **POST** `http://127.0.0.1:5050/v1/audio/speech`
+- **Headers**: `Content-Type: application/json`
+- **Body**:
+  ```json
+  {
+    "input": "Привет! Это проверка синтеза речи.",
+    "voice": "ru-RU-DmitryNeural",
+    "speed": 1.0
+  }
+  ```
+- **Response**: Binary audio stream (`audio/mpeg`).
+
+#### Example Request (`curl`):
+```bash
+curl -X POST http://127.0.0.1:5050/v1/audio/speech \
+  -H "Content-Type: application/json" \
+  -d '{"input": "Hello world", "voice": "ru-RU-DmitryNeural"}' \
+  --output test.mp3
+```
+
+---
+
+## ⚙️ Customization
+
+- **Default Voice**: Open the script in any text editor and change `ru-RU-DmitryNeural` to any voice supported by Edge TTS (e.g. `ru-RU-SvetlanaNeural`, `en-US-ChristopherNeural`, etc.).
+- **Port**: Default is `5050`. You can change `port=5050` at the bottom of the file in `uvicorn.run(...)`.
+
+---
+
+## ⚠️ Disclaimer
+
+This project uses `edge-tts`, which relies on Microsoft Edge's online TTS endpoints. It is intended for personal and educational use.
